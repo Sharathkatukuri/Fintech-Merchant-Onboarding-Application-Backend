@@ -13,11 +13,21 @@ const errorHandler = require("./middleware/errorHandler");
 const PORT = process.env.PORT || 5000;
 const app = express();
 
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN || "*",
-  })
-);
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://fintech-merchant-onboarding-applica.vercel.app"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
